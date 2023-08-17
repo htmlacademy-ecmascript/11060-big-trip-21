@@ -1,7 +1,7 @@
 import { createElement } from '../render.js';
 
-function addTripTemplate() {
-  return (`
+function createNewEventTemplate() {
+  return `
     <li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
         <header class="event__header">
@@ -164,12 +164,12 @@ function addTripTemplate() {
         </section>
       </form>
     </li>
-  `);
+  `;
 }
 
-export default class TripAddView {
+export default class NewEventView {
   getTemplate() {
-    return addTripTemplate();
+    return createNewEventTemplate();
   }
 
   getElement() {
