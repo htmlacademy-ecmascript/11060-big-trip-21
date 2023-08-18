@@ -1,5 +1,7 @@
 import { getRandomInteger, getRandomArrayElement, getRandomBoolean } from '../utils.js';
 
+let destinationId = 0;
+
 const startDates = [
   '2019-03-18T10:00',
   '2019-03-18T11:30',
@@ -14,20 +16,10 @@ const endDates = [
   '2019-03-18T17:00'
 ];
 
-const eventTypes = {
-  TAXI: 'Taxi',
-  BUS: 'Bus',
-  TRAIN: 'Train',
-  SHIP: 'Ship',
-  DRIVE: 'Drive',
-  FLIGHT: 'Flight',
-  CHECK_IN: 'Check-in',
-  SIGHTSEEING: 'Sightseeing',
-  RESTAURANT: 'Restaurant'
-};
+const eventTypes = ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
 
 const offers = {
-  [eventTypes.TAXI]: [
+  'Taxi': [
     {
       name: 'Transfer',
       cost: 60,
@@ -39,7 +31,7 @@ const offers = {
       checked: false
     }
   ],
-  [eventTypes.BUS]: [
+  'Bus': [
     {
       name: 'Choose seats',
       cost: 130,
@@ -51,7 +43,7 @@ const offers = {
       checked: false
     }
   ],
-  [eventTypes.TRAIN]: [
+  'Train': [
     {
       name: 'Buy tickets',
       cost: 260,
@@ -63,7 +55,7 @@ const offers = {
       checked: false
     }
   ],
-  [eventTypes.SHIP]: [
+  'Ship': [
     {
       name: 'Add comfort',
       cost: 130,
@@ -75,7 +67,7 @@ const offers = {
       checked: false
     }
   ],
-  [eventTypes.DRIVE]: [
+  'Drive': [
     {
       name: 'Sportcar',
       cost: 460,
@@ -87,7 +79,7 @@ const offers = {
       checked: false
     }
   ],
-  [eventTypes.FLIGHT]: [
+  'Flight': [
     {
       name: 'Choose seats',
       cost: 40,
@@ -99,7 +91,7 @@ const offers = {
       checked: false
     }
   ],
-  [eventTypes.CHECK_IN]: [
+  'Check-in': [
     {
       name: 'Book tickets',
       cost: 60,
@@ -111,7 +103,7 @@ const offers = {
       checked: false
     }
   ],
-  [eventTypes.SIGHTSEEING]: [
+  'Sightseeing': [
     {
       name: 'Order Uber',
       cost: 40,
@@ -123,7 +115,7 @@ const offers = {
       checked: false
     }
   ],
-  [eventTypes.RESTAURANT]: [
+  'Restaurant': [
     {
       name: 'Add meal',
       cost: 10,
@@ -137,98 +129,21 @@ const offers = {
   ]
 };
 
-const eventDestinations = {
-  GENOVA: 'Genova',
-  MILANO: 'Milano',
-  TORINO: 'Torino',
-  COMO: 'Como'
-};
+const eventDestinations = ['Genova', 'Milano', 'Torino', 'Como'];
 
-const destinationDescriptions = [
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-  'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-  'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-  'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
-];
+const destinationDescriptions = {
+  'Genova': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+  'Milano': 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+  'Torino': 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+  'Como': 'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+};
 
 const photoDesriptions = [
   'Всё отлично!',
   'В целом всё неплохо. Но не всё.',
-  'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.',
   'Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.',
-  'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.',
-  'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
+  'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.'
 ];
-
-const pictures = {
-  [eventDestinations.GENOVA]: [
-    {
-      src: `https://loremflickr.com/248/152?random=${getRandomInteger()}`,
-      description: getRandomArrayElement(photoDesriptions),
-    },
-    {
-      src: `https://loremflickr.com/248/152?random=${getRandomInteger()}`,
-      description: getRandomArrayElement(photoDesriptions),
-    }
-  ],
-  [eventDestinations.MILANO]: [
-    {
-      src: `https://loremflickr.com/248/152?random=${getRandomInteger()}`,
-      description: getRandomArrayElement(photoDesriptions),
-    },
-    {
-      src: `https://loremflickr.com/248/152?random=${getRandomInteger()}`,
-      description: getRandomArrayElement(photoDesriptions),
-    }
-  ],
-  [eventDestinations.TORINO]: [
-    {
-      src: `https://loremflickr.com/248/152?random=${getRandomInteger()}`,
-      description: getRandomArrayElement(photoDesriptions),
-    },
-    {
-      src: `https://loremflickr.com/248/152?random=${getRandomInteger()}`,
-      description: getRandomArrayElement(photoDesriptions),
-    }
-  ],
-  [eventDestinations.COMO]: [
-    {
-      src: `https://loremflickr.com/248/152?random=${getRandomInteger()}`,
-      description: getRandomArrayElement(photoDesriptions),
-    },
-    {
-      src: `https://loremflickr.com/248/152?random=${getRandomInteger()}`,
-      description: getRandomArrayElement(photoDesriptions),
-    }
-  ]
-};
-
-const destinations = {
-  [eventDestinations.GENOVA]: {
-    id: crypto.randomUUID(),
-    description: getRandomArrayElement(destinationDescriptions),
-    name: 'Genova',
-    pictures: pictures[eventDestinations.GENOVA]
-  },
-  [eventDestinations.MILANO]: {
-    id: crypto.randomUUID(),
-    description: getRandomArrayElement(destinationDescriptions),
-    name: 'Milano',
-    pictures: pictures[eventDestinations.MILANO]
-  },
-  [eventDestinations.TORINO]: {
-    id: crypto.randomUUID(),
-    description: getRandomArrayElement(destinationDescriptions),
-    name: 'Torino',
-    pictures: pictures[eventDestinations.TORINO]
-  },
-  [eventDestinations.COMO]: {
-    id: crypto.randomUUID(),
-    description: getRandomArrayElement(destinationDescriptions),
-    name: 'Como',
-    pictures: pictures[eventDestinations.COMO]
-  }
-};
 
 const BLANK_EVENT = {
   id: crypto.randomUUID(),
@@ -237,25 +152,44 @@ const BLANK_EVENT = {
   endTime: new Date(),
   destination: [],
   isFavorite: false,
-  type: eventTypes.FLIGHT,
+  type: eventTypes[0],
   offers: []
 };
 
-function getRandomEvent() {
-  const randomEventType = getRandomArrayElement(Object.keys(eventTypes));
-  const randomEventDestination = getRandomArrayElement(Object.keys(eventDestinations));
+function generatePictures() {
+  return {
+    src: `https://loremflickr.com/248/152?random=${getRandomInteger()}`,
+    description: getRandomArrayElement(photoDesriptions),
+  };
+}
+
+function generateDestination() {
+  const name = getRandomArrayElement(eventDestinations);
+
+  return {
+    id: destinationId++,
+    description: destinationDescriptions[name],
+    name,
+    pictures: Array.from({length: getRandomInteger(0, 5)}, generatePictures),
+  };
+}
+
+const destinationMocks = Array.from({length: getRandomInteger(5, 10)}, generateDestination);
+
+function generateRandomEvent() {
+  const randomEventType = getRandomArrayElement(eventTypes);
 
   return {
     id: crypto.randomUUID(),
     price: getRandomInteger(),
     startTime: getRandomArrayElement(startDates),
     endTime: getRandomArrayElement(endDates),
-    destination: destinations[eventDestinations[randomEventDestination]],
+    destination: getRandomArrayElement(destinationMocks),
     isFavorite: getRandomBoolean(),
-    type: eventTypes[randomEventType],
-    offers: offers[eventTypes[randomEventType]]
+    offers: offers[randomEventType],
+    type: randomEventType
   };
 }
 
-export { getRandomEvent, BLANK_EVENT };
+export { generateRandomEvent, BLANK_EVENT };
 
