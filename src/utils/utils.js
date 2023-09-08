@@ -25,6 +25,10 @@ const shuffleArray = (elements) => {
   return elements;
 };
 
+function updateItem(items, update) {
+  return items.map((item) => item.id === update.id ? update : item);
+}
+
 function getDuration(date1, date2) {
   const diff = Math.abs(dayjs(date2).diff(date1));
   const fullFormatted = dayjs.duration(diff).format('MM[M] DD[D] HH[H] mm[M]');
@@ -39,7 +43,7 @@ function getDuration(date1, date2) {
     return dayjs.duration(diff).format('HH[H] mm[M]');
   }
 
-  if (splittedTime[2] === '00M') {
+  if (splittedTime[0] === '00M') {
     return dayjs.duration(diff).format('DD[D] HH[H] mm[M]');
   }
 
@@ -61,5 +65,6 @@ export {
   getDuration,
   shuffleArray,
   humanizeDate,
-  isChecked
+  isChecked,
+  updateItem
 };
