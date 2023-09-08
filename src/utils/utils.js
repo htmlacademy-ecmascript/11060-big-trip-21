@@ -25,6 +25,10 @@ const shuffleArray = (elements) => {
   return elements;
 };
 
+function replaceTitle(title) {
+  return title.toLowerCase().replace(' ', '-');
+}
+
 function updateItem(items, update) {
   return items.map((item) => item.id === update.id ? update : item);
 }
@@ -66,5 +70,6 @@ export {
   shuffleArray,
   humanizeDate,
   isChecked,
-  updateItem
+  updateItem,
+  replaceTitle
 };
