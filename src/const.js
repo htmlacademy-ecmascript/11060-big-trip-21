@@ -27,17 +27,17 @@ const Price = {
 };
 
 const DATES_FROM = [
-  '2019-03-18T10:00',
-  '2019-03-18T11:30',
-  '2019-03-18T12:00',
+  '2019-03-17T10:00',
+  '2019-03-16T11:30',
+  '2019-03-14T12:00',
   '2019-03-18T13:30'
 ];
 
 const DATES_TO = [
   '2019-03-18T14:30',
-  '2019-03-18T15:00',
-  '2019-03-18T16:30',
-  '2019-03-18T17:00'
+  '2019-03-19T15:00',
+  '2019-03-19T16:30',
+  '2019-03-19T17:00'
 ];
 
 const DEFAULT_TYPE = 'Flight';
@@ -61,6 +61,22 @@ const FilterType = {
   PAST: 'past'
 };
 
+const SortType = {
+  DAY: 'day',
+  EVENT: 'event',
+  TIME: 'time',
+  PRICE: 'price',
+  OFFER: 'offer'
+};
+
+const enabledSortType = {
+  [SortType.DAY]: true,
+  [SortType.EVENT]: false,
+  [SortType.TIME]: true,
+  [SortType.PRICE]: true,
+  [SortType.OFFER]: false
+};
+
 export {
   DATE_FORMAT,
   CITIES,
@@ -75,5 +91,7 @@ export {
   POINT_EMPTY,
   MIN_PICTURES,
   MAX_PICTURES,
-  FilterType
+  FilterType,
+  SortType,
+  enabledSortType
 };

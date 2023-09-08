@@ -1,5 +1,5 @@
 import { DATE_FORMAT, POINT_EMPTY, TYPES } from '../const.js';
-import { humanizeDate, isChecked } from '../utils/utils.js';
+import { humanizeDate, replaceTitle } from '../utils/utils.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 function createEventTypeInputTemplate(types) {
@@ -24,8 +24,8 @@ function createOffersTemplate(offers) {
       <div class="event__available-offers">
         ${offers.map((offer) => `
           <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${isChecked(offer.isChecked)}>
-            <label class="event__offer-label" for="event-offer-luggage-1">
+            <input class="event__offer-checkbox  visually-hidden" id="event-${replaceTitle(offer.title)}-${offer.id}" type="checkbox" name="event-${replaceTitle(offer.title)}" ${offer.isChecked ? 'checked' : ''}>
+            <label class="event__offer-label" for="event-${replaceTitle(offer.title)}-${offer.id}">
               <span class="event__offer-title">${offer.title}</span>
               &plus;&euro;&nbsp;
               <span class="event__offer-price">${offer.price}</span>
@@ -156,6 +156,6 @@ export default class PointEditView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit();
+    this.#handleFormSubmit(this.#point);
   };
 }

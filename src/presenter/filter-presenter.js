@@ -1,6 +1,6 @@
 import FiltersView from '../view/filters-view';
-import {generateFilter} from '../mock/filter.js';
 import {render} from '../framework/render.js';
+import {filter} from '../utils/filter.js';
 
 export default class FilterPresenter {
   #container = null;
@@ -11,7 +11,12 @@ export default class FilterPresenter {
     this.#container = container;
     this.#pointsModel = pointsModel;
 
-    this.#filters = generateFilter(this.#pointsModel.points);
+    this.#filters = Object.entries(filter).map(
+      ([filterType, filterPoints]) => ({
+        type: filterType,
+        count: filterPoints(this.#pointsModel.points).length,
+      }),
+    );
   }
 
   init () {

@@ -1,18 +1,26 @@
-import {render, replace} from '../framework/render.js';
+import {RenderPosition, render, replace, remove} from '../framework/render.js';
 import SortView from '../view/sort-view.js';
 import EventsListView from '../view/events-list-view.js';
-import PointEditView from '../view/point-edit-view.js';
-import PointView from '../view/point-view.js';
 import NoPointView from '../view/no-point-view.js';
+import PointPresenter from './point-presenter.js';
+import {updateItem} from '../utils/utils.js';
+import { SortType, enabledSortType } from '../const.js';
+import { sorts } from '../utils/sort.js';
 
 export default class BoardPresenter {
   #eventsListComponent = new EventsListView();
+  #sortComponent = null;
+  #noPointComponent = new NoPointView();
 
   #container = null;
   #destinationsModel = null;
   #offersModel = null;
   #pointsModel = null;
+
   #points = [];
+
+  #pointPresenters = new Map();
+  #currentSortType = SortType.DAY;
 
   constructor({container, destinationsModel, offersModel, pointsModel}) {
     this.#container = container;
@@ -20,75 +28,102 @@ export default class BoardPresenter {
     this.#offersModel = offersModel;
     this.#pointsModel = pointsModel;
 
-    this.#points = [...this.#pointsModel.points];
+    this.#points = sorts[SortType.DAY]([...this.#pointsModel.points]);
   }
 
   init() {
     this.#renderBoard();
   }
 
-  #renderPoint(point) {
-    const escKeyDownHandler = (evt) => {
-      if(evt.key === 'Escape') {
-        evt.preventDefault();
-        replaceEditToPoint();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
+  #modeChangeHandler = () => {
+    this.#pointPresenters.forEach((presenter) => presenter.resetView());
+  };
 
-    const pointEditClickHandler = () => {
-      replacePointToEdit();
-      document.addEventListener('keydown', escKeyDownHandler);
-    };
+  #pointChangeHandler = (updatedPoint) => {
+    this.#points = updateItem(this.#points, updatedPoint);
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
+  };
 
-    const formSubmitHandler = () => {
-      replaceEditToPoint();
-      document.removeEventListener('keydown', escKeyDownHandler);
-    };
-
-    const pointEditFormClickHandler = () => {
-      replaceEditToPoint();
-      document.addEventListener('keydown', escKeyDownHandler);
-    };
-
-    const pointComponent = new PointView({
-      point,
-      pointDestination: this.#destinationsModel.getById(point.destination),
-      pointOffers: this.#offersModel.getByType(point.type),
-      onEditClick: pointEditClickHandler
-    });
-
-    const pointEditComponent = new PointEditView({
-      point,
-      pointDestination: this.#destinationsModel.getById(point.destination),
-      pointOffers: this.#offersModel.getByType(point.type),
-      onFormSubmit: formSubmitHandler,
-      onEditClick: pointEditFormClickHandler
-    });
-
-    function replacePointToEdit() {
-      replace(pointEditComponent, pointComponent);
-    }
-
-    function replaceEditToPoint() {
-      replace(pointComponent, pointEditComponent);
-    }
-
-    render(pointComponent, this.#eventsListComponent.element);
+  #sortPoints(sortType) {
+    this.#currentSortType = sortType;
+    this.#points = sorts[this.#currentSortType](this.#points);
   }
 
-  #renderBoard() {
-    render(new SortView(), this.#container);
-    render(this.#eventsListComponent, this.#container);
-
-    if (!this.#points.length) {
-      render(new NoPointView(), this.#eventsListComponent.element);
+  #sortTypeChangeHandler = (sortType) => {
+    if (this.#currentSortType === sortType) {
       return;
     }
 
+    this.#sortPoints(sortType);
+    this.#clearPoints();
+    this.#renderSort();
+    this.#renderPoints();
+  };
+
+  #renderSort() {
+    const prevSortComponent = this.#sortComponent;
+
+    const sortTypes = Object.values(SortType).map((type) => ({
+      type,
+      isChecked: (type === this.#currentSortType),
+      isDisabled: !enabledSortType[type]
+    }));
+
+    this.#sortComponent = new SortView({
+      items: sortTypes,
+      onSortTypeChange: this.#sortTypeChangeHandler
+    });
+
+    if (prevSortComponent) {
+      replace(this.#sortComponent, prevSortComponent);
+      remove(prevSortComponent);
+    } else {
+      render(this.#sortComponent, this.#container, RenderPosition.AFTERBEGIN);
+    }
+  }
+
+  #renderEventsList() {
+    render(this.#eventsListComponent, this.#container);
+  }
+
+  #renderPoint(point) {
+    const pointPresenter = new PointPresenter({
+      eventListContainer: this.#eventsListComponent.element,
+      destinationsModel: this.#destinationsModel,
+      offersModel: this.#offersModel,
+      onDataChange: this.#pointChangeHandler,
+      onModeChange: this.#modeChangeHandler
+    });
+
+    pointPresenter.init(point);
+
+    this.#pointPresenters.set(point.id, pointPresenter);
+  }
+
+  #renderPoints() {
     this.#points.forEach((point) => {
       this.#renderPoint(point);
     });
+  }
+
+  #renderNoPoints() {
+    render(this.#noPointComponent, this.#eventsListComponent.element);
+  }
+
+  #clearPoints() {
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.clear();
+  }
+
+  #renderBoard() {
+    if (!this.#points.length) {
+      this.#renderNoPoints();
+      return;
+    }
+
+    this.#renderEventsList();
+    this.#renderSort();
+    this.#renderPoints();
   }
 }
 
