@@ -26,7 +26,19 @@ const shuffleArray = (elements) => {
 };
 
 function replaceTitle(title) {
+  if (!title) {
+    return title;
+  }
+
   return title.toLowerCase().replace(' ', '-');
+}
+
+function capitalizeFirstLetter(word) {
+  if (!word) {
+    return word;
+  }
+
+  return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
 function updateItem(items, update) {
@@ -71,5 +83,6 @@ export {
   humanizeDate,
   isChecked,
   updateItem,
-  replaceTitle
+  replaceTitle,
+  capitalizeFirstLetter
 };
