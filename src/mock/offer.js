@@ -6,7 +6,7 @@ function generateOffer(type) {
     id: crypto.randomUUID(),
     title: `Offer ${type}`,
     price: getRandomInteger(Price.MIN, (Price.MAX) / 10),
-    isChecked: getRandomBoolean()
+    //isChecked: getRandomBoolean()
   };
 }
 

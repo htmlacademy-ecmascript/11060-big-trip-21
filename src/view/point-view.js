@@ -2,13 +2,13 @@ import { humanizeDate, getDuration } from '../utils/utils.js';
 import { DATE_FORMAT } from '../const.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
-function createOffersTemplate(offers) {
-  if (!offers.length) {
+function createOffersTemplate({pointOffers, point}) {
+  if (!pointOffers.length) {
     return '';
   }
 
   return `
-    ${offers.map((offer) => offer.isChecked ? `
+    ${pointOffers.map((offer) => point.offers.includes(offer.id) ? `
       <li class="event__offer">
         <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
@@ -26,7 +26,8 @@ function createPointTemplate({point, pointDestination, pointOffers}) {
   const eventDate = humanizeDate(dateFrom, DATE_FORMAT.EVENT_DATE);
   const displayDate = humanizeDate(dateFrom, DATE_FORMAT.DISPLAY_DATE);
   const durationTime = getDuration(dateFrom, dateTo);
-  const offersTemplate = createOffersTemplate(pointOffers);
+  const offersTemplate = createOffersTemplate({pointOffers, point});
+  const name = pointDestination ? pointDestination.name : '';
 
   return `
     <li class="trip-events__item">
@@ -35,7 +36,7 @@ function createPointTemplate({point, pointDestination, pointOffers}) {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${type} ${pointDestination.name}</h3>
+        <h3 class="event__title">${type} ${name}</h3>
         <div class="event__schedule">
           <p class="event__time">
             <time class="event__start-time" datetime="${dateFrom}">${startEventTime}</time>
