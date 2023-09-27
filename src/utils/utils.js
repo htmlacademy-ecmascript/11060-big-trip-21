@@ -74,6 +74,25 @@ function isChecked(check) {
   return check ? 'checked' : '';
 }
 
+function getDestinationById(pointDestinations, id) {
+  return pointDestinations.find((destination) => destination.id === id);
+}
+
+function getDestinationByCity(pointDestinations, city) {
+  const resultDestination = pointDestinations.find((destination) => destination.name === city);
+
+  if (resultDestination) {
+    return resultDestination.id;
+  }
+
+  return '';
+}
+
+function getOffersByType(pointOffers, type) {
+  const resultOffers = pointOffers.find((offer) => offer.type === type);
+  return resultOffers.offers;
+}
+
 export {
   getRandomInteger,
   getRandomArrayElement,
@@ -84,5 +103,8 @@ export {
   isChecked,
   updateItem,
   replaceTitle,
-  capitalizeFirstLetter
+  capitalizeFirstLetter,
+  getDestinationById,
+  getDestinationByCity,
+  getOffersByType
 };

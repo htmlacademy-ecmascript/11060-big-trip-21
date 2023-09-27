@@ -27,17 +27,17 @@ const Price = {
 };
 
 const DATES_FROM = [
-  '2019-03-17T10:00',
-  '2019-03-16T11:30',
-  '2019-03-14T12:00',
-  '2019-03-18T13:30'
+  '2023-04-17T10:00',
+  '2023-05-16T11:30',
+  '2023-06-14T12:00',
+  '2023-07-18T13:30'
 ];
 
 const DATES_TO = [
-  '2019-03-18T14:30',
-  '2019-03-19T15:00',
-  '2019-03-19T16:30',
-  '2019-03-19T17:00'
+  '2023-08-18T14:30',
+  '2023-09-19T15:00',
+  '2023-10-19T16:30',
+  '2023-11-19T17:00'
 ];
 
 const DEFAULT_TYPE = 'Flight';
@@ -61,6 +61,13 @@ const FilterType = {
   PAST: 'past'
 };
 
+const NoPointsTextType = {
+  [FilterType.EVERYTHING]: 'Click New Event to create your first point',
+  [FilterType.FUTURE]: 'There are no future events now',
+  [FilterType.PRESENT]: 'There are no present events now',
+  [FilterType.PAST]: 'There are no past events now',
+};
+
 const SortType = {
   DAY: 'day',
   EVENT: 'event',
@@ -75,6 +82,18 @@ const enabledSortType = {
   [SortType.TIME]: true,
   [SortType.PRICE]: true,
   [SortType.OFFER]: false
+};
+
+const UserAction = {
+  UPDATE_POINT: 'UPDATE_POINT',
+  ADD_POINT: 'ADD_POINT',
+  DELETE_POINT: 'DELETE_POINT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
 };
 
 export {
@@ -93,5 +112,8 @@ export {
   MAX_PICTURES,
   FilterType,
   SortType,
-  enabledSortType
+  enabledSortType,
+  UserAction,
+  UpdateType,
+  NoPointsTextType,
 };

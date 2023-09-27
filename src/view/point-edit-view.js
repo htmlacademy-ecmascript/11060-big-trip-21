@@ -1,22 +1,9 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { CITIES, DATE_FORMAT, POINT_EMPTY, TYPES } from '../const.js';
+import { getDestinationByCity, getDestinationById, getOffersByType } from '../utils/utils.js';
 import { humanizeDate, replaceTitle, capitalizeFirstLetter } from '../utils/utils.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-
-function getDestinationById(pointDestinations, id) {
-  return pointDestinations.find((destination) => destination.id === id);
-}
-
-function getDestinationByCity(pointDestinations, city) {
-  const resultDestination = pointDestinations.find((destination) => destination.name === city);
-  return resultDestination.id;
-}
-
-function getOffersByType(pointOffers, type) {
-  const resultOffers = pointOffers.find((offer) => offer.type === type);
-  return resultOffers.offers;
-}
 
 function createEventTypeInputTemplate(types) {
   return `
@@ -85,11 +72,12 @@ function createDestinationTemplate(pointDestination) {
 
 function createPointEditTemplate({point, pointDestination, pointOffers}) {
   const {type, basePrice, dateFrom, dateTo} = point;
-
-  const startEventTime = humanizeDate(dateFrom, DATE_FORMAT.EDIT_DATE);
-  const endEventTime = humanizeDate(dateTo, DATE_FORMAT.EDIT_DATE);
+  const name = pointDestination ? pointDestination.name : '';
+  const startEventTime = dateFrom ? humanizeDate(dateFrom, DATE_FORMAT.EDIT_DATE) : '';
+  const endEventTime = dateTo ? humanizeDate(dateTo, DATE_FORMAT.EDIT_DATE) : '';
   const destinationTemplate = createDestinationTemplate(pointDestination);
   const offersTemplate = createOffersTemplate(point, pointOffers);
+  const deleteButtonType = dateFrom ? 'Delete' : 'Cancel';
 
   return `
     <li class="trip-events__item">
@@ -115,7 +103,7 @@ function createPointEditTemplate({point, pointDestination, pointOffers}) {
             <label class="event__label  event__type-output" for="event-destination-1">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${pointDestination.name}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${name}" list="destination-list-1">
             <datalist id="destination-list-1">
               ${CITIES.map((city) => `<option value="${city}"></option>`).join('')}
             </datalist>
@@ -138,7 +126,7 @@ function createPointEditTemplate({point, pointDestination, pointOffers}) {
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
+          <button class="event__reset-btn" type="reset">${deleteButtonType}</button>
           <button class="event__rollup-btn" type="button">
             <span class="visually-hidden">Open event</span>
           </button>
@@ -156,17 +144,19 @@ export default class PointEditView extends AbstractStatefulView {
   #pointDestinations = null;
   #pointOffers = null;
   #handleEditClick = null;
+  #handleDeleteClick = null;
   #handleFormSubmit = null;
   #dateFromPicker = null;
   #dateToPicker = null;
 
-  constructor({point = POINT_EMPTY, pointDestinations, pointOffers, onFormSubmit, onEditClick}) {
+  constructor({point = POINT_EMPTY, pointDestinations, pointOffers, onFormSubmit, onEditClick, onDeleteClick}) {
     super();
     this._setState(PointEditView.parsePointToState(point));
     this.#pointDestinations = pointDestinations;
     this.#pointOffers = pointOffers;
     this.#handleEditClick = onEditClick;
     this.#handleFormSubmit = onFormSubmit;
+    this.#handleDeleteClick = onDeleteClick;
 
     this._restoreHandlers();
   }
@@ -201,6 +191,7 @@ export default class PointEditView extends AbstractStatefulView {
 
   _restoreHandlers() {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
@@ -232,15 +223,35 @@ export default class PointEditView extends AbstractStatefulView {
     this.#handleEditClick();
   };
 
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(PointEditView.parseStateToPoint(this._state));
+  };
+
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
+
+    if (!this.element.querySelector('#event-start-time-1').value) {
+      this._setState({
+        dateFrom: new Date()
+      });
+    }
+
+    if (!this.element.querySelector('#event-end-time-1').value) {
+      this._setState({
+        dateTo: new Date()
+      });
+    }
+
     this.#handleFormSubmit(PointEditView.parseStateToPoint(this._state));
   };
 
   #priceChangeHandler = (evt) => {
-    this._setState({
-      basePrice: evt.target.value
-    });
+    if (evt.target.value >= 0) {
+      this._setState({
+        basePrice: evt.target.value
+      });
+    }
   };
 
   #destinationChangeHandler = (evt) => {
@@ -268,7 +279,9 @@ export default class PointEditView extends AbstractStatefulView {
       this.element.querySelector('#event-start-time-1'),
       {
         enableTime: true,
-        dateFormat: 'd/m/y H:i',
+        //dateFormat: 'd/m/y H:i',
+        altInput: true,
+        altFormat: 'd/m/y H:i',
         'time_24hr': true,
         defaultDate: this._state.dateFrom,
         onClose: this.#dateFromCloseHandler,
@@ -282,7 +295,10 @@ export default class PointEditView extends AbstractStatefulView {
       this.element.querySelector('#event-end-time-1'),
       {
         enableTime: true,
-        dateFormat: 'd/m/y H:i',
+        //dateFormat: 'd/m/y H:i',
+        altInput: true,
+        altFormat: 'd/m/y H:i',
+        'time_24hr': true,
         defaultDate: this._state.dateTo,
         onClose: this.#dateToCloseHandler,
         minDate: this._state.dateFrom
